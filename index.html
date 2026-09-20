@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISS - Issenguel Service | Eventos de Marketing Digital</title>
+    <style>
+        :root {
+            --primary: Skyblue;
+            --secondary: #f59e0b;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --success: #16a34a;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--light); color: var(--dark); scroll-behavior: smooth; }
+        header {
+            background: linear-gradient(135deg, var(--primary), orange);
+            color: white; padding: 2rem 1rem; text-align: center; position: sticky; top: 0; z-index: 50;
+        }
+        .logo { font-size: 2.5rem; font-weight: 800; }
+        .logo span { color: var(--secondary); }
+        nav { display: flex; justify-content: center; gap: 2rem; margin-top: 1rem; flex-wrap: wrap; }
+        nav a { color: white; text-decoration: none; font-weight: 600; }
+        
+        .hero {
+            padding: 4rem 1rem; text-align: center; max-width: 800px; margin: auto;
+        }
+        .hero h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .hero p { font-size: 1.2rem; margin-bottom: 2rem; opacity: 0.9; }
+        .btn {
+            background: var(--secondary); color: var(--dark); padding: 1rem 2rem;
+            border: none; border-radius: 8px; font-weight: 700; cursor: pointer;
+            transition: 0.3s; text-decoration: none; display: inline-block;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
+        .btn-whatsapp { background: var(--success); color: white; }
+        .btn-outline { background: transparent; border: 2px solid var(--secondary); color: var(--secondary); }
+
+        .container { max-width: 1200px; margin: 3rem auto; padding: 0 1rem; }
+        .section-title { text-align: center; font-size: 2rem; margin-bottom: 1rem; }
+        
+        /* Filtros e Pesquisa */
+        .filtros {
+            display: flex; gap: 1rem; justify-content: center; margin: 2rem 0; flex-wrap: wrap;
+        }
+        .filtros input, .filtros select {
+            padding: 0.8rem; border: 2px solid #e2e8f0; border-radius: 8px; min-width: 200px;
+        }
+
+        .eventos-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem; margin-bottom: 4rem;
+        }
+        .card {
+            background: white; border-radius: 12px; overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: 0.3s; position: relative;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .card-img { height: 180px; background: linear-gradient(45deg, var(--primary), ora); position: relative; }
+        .card-badge {
+            position: absolute; top: 1rem; right: 1rem; background: var(--secondary);
+            padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700;
+        }
+        .card-content { padding: 1.5rem; }
+        .card h3 { margin-bottom: 0.5rem; }
+        .card-info { display: flex; gap: 1rem; margin: 1rem 0; font-size: 0.9rem; opacity: 0.8; flex-wrap: wrap; }
+        .card-actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
+        .card-actions button { flex: 1; padding: 0.7rem; font-size: 0.9rem; }
+
+        /* Abas de Serviços */
+        .tabs { display: flex; justify-content: center; gap: 1rem; margin: 2rem 0 1rem; }
+        .tab-btn {
+            padding: 0.8rem 1.5rem; border: 2px solid var(--primary); background: white;
+            color: var(--primary); border-radius: 8px; font-weight: 700; cursor: pointer;
+        }
+        .tab-btn.active { background: var(--primary); color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.4s; }
+        @keyframes fadeIn { from { opacity: 0; } }
+        
+        .galeria {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem; margin-top: 1.5rem;
+        }
+        .galeria-item {
+            border-radius: 12px; overflow: hidden; height: 220px; position: relative;
+            background: #e2e8f0; cursor: pointer;
+        }
+        .galeria-item img {
+            width: 100%; height: 100%; object-fit: cover; transition: 0.3s;
+        }
+        .galeria-item:hover img { transform: scale(1.05); }
+        .galeria-legenda {
+            position: absolute; bottom: 0; left: 0; right: 0; background: rgba(15,23,42,0.8);
+            color: white; padding: 0.7rem; font-size: 0.9rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 100;
+        }
+        .modal-content {
+            background: white; padding: 2rem; border-radius: 12px; width: 90%; max-width: 500px;
+            animation: slideIn 0.3s ease; position: relative;
+        }
+        @keyframes slideIn { from { transform: translateY(-50px); opacity: 0; } }
+        .modal h2 { margin-bottom: 1.5rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.3rem; font-weight: 600; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 0.8rem; border: 2px solid #e2e8f0; border-radius: 6px;
+        }
+        .close { position: absolute; top: 1rem; right: 1rem; font-size: 1.5rem; cursor: pointer; }
+        
+        .contador {
+            background: var(--dark); color: orange; padding: 3rem 1rem; text-align: center;
+        }
+        .countdown { display: flex; justify-content: center; gap: 2rem; margin-top: 1.5rem; flex-wrap: wrap; }
+        .countdown div { font-size: 2rem; font-weight: 700; }
+        .countdown span { display: block; font-size: 0.9rem; opacity: 0.7; }
+
+        /* Toast */
+        .toast {
+            position: fixed; bottom: 2rem; right: 2rem; background: var(--success); color: white;
+            padding: 1rem 1.5rem; border-radius: 8px; display: none; z-index: 200;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Botão Admin Flutuante */
+        .admin-float {
+            position: fixed; bottom: 2rem; left: 2rem; z-index: 90;
+        }
+
+        footer {
+            background: var(--dark); color: white; text-align: center; padding: 2rem 1rem; margin-top: 3rem;
+        }
+
+        @media (max-width: 768px) {
+            .countdown { gap: 1rem; }
+            .countdown div { font-size: 1.5rem; }
+            nav { gap: 1rem; }
+            .admin-float { left: 1rem; bottom: 1rem; }
+        }
+        .Buffé{  display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem; margin-top: 1.5rem;}
+
+        .Buffé1{border-radius: 12px; overflow: hidden; height: 220px; position: relative;
+            background: #e2e8f0; cursor: pointer}
+    </style>
+</head>
+<body style="background-color: black;">
+    
+    <a href="Templantes/Link.html"></a>
+    <header>
+        <div style="background-color: black;" class="logo">ISSENGUEL <span>SERVICE</span></div>
+        <p>Eventos que transformam marcas em referências digitais</p>
+        <nav>
+            <a href="#eventos">Eventos</a>
+            <a href="#servicos">Serviços</a>
+            <a href="#proximo">Próximo Evento</a>
+            <a href="#contacto">Contacto</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1 style="color: white;">Domina o Marketing Digital em Angola</h1>
+        <p>Workshops, masterclasses e networking com os maiores nomes do digital. ISS conecta-te ao futuro.</p>
+        <a href="#eventos" class="btn">Ver Agenda de Eventos</a>
+        <a href="https://wa.me/244940430372?text=Olá%20Admin%20ISS,%20quero%20saber%20mais%20sobre%20os%20eventos" 
+           class="btn btn-whatsapp" target="_blank">Falar com Admin</a>
+    </section>
+
+    <section class="contador" id="proximo">
+        <h2>Próximo Grande Evento: ISS Digital Summit 2026</h2>
+        <div class="countdown" id="countdown">
+            <div><div id="days">00</div><span>Dias</span></div>
+            <div><div id="hours">00</div><span>Horas</span></div>
+            <div><div id="minutes">00</div><span>Min</span></div>
+            <div><div id="seconds">00</div><span>Seg</span></div>
+            
+        </div>
+    </section>
+
+    <!-- Nova Secção: Serviços com Abas -->
+    <div class="container" id="servicos">
+        <h2 class="section-title">Nossos Serviços para Eventos</h2>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="mudarAba('garcon')">Serviço de Garçon</button>
+            <button class="tab-btn" onclick="mudarAba('doces')">Entrega de Doces</button>
+            <button class="tab-btn" onclick="mudarAba('Buffé')">Serviço de Buffé</button>
+        </div>
+
+        <div id="garcon" class="tab-content active">
+            <p style="text-align: center; margin-bottom: 1rem; color: rgba(255, 166, 0, 0.932);">Equipa profissional de garçons para tornar teu evento impecável.</p>
+            <div class="galeria">
+                <div class="galeria-item">
+                    <img src="C:\Users\Asus\Downloads\IMG-20260608-WA0011_edited.jpg" alt="Garçon servindo">
+                    <div class="galeria-legenda">Atendimento VIP em Gala ISS 2025</div>
+                </div>
+                <div class="galeria-item">
+                    <img src="C:\Users\Asus\Downloads\IMG-20260613-WA0008.jpg" alt="Equipa de garçons">
+                    <div class="galeria-legenda">Equipa uniformizada para cocktails</div>
+                </div>
+                <div class="galeria-item">
+                    <img src="C:\Users\Asus\Downloads\IMG-20260613-WA0005.jpg" alt="Serviço de mesa">
+                    <div class="galeria-legenda">Serviço de mesa para jantares corporativos</div>
+                </div>
+                
+            </div>
+            <div style="text-align: center; margin-top: 2rem;">
+                <button class="btn" onclick="solicitarServico('Garçon para Eventos')">Solicitar Orçamento</button>
+            </div>
+        </div>
+
+        <div id="doces" class="tab-content">
+            <p style="text-align: center; margin-bottom: 1rem;">Doces personalizados e mesa de sobremesas para encantar teus convidados.</p>
+            <div class="galeria">
+                <div class="galeria-item">
+                    <img src="C:\Users\Asus\Downloads\IMG-20250531-WA0245_edited.jpg" alt="Mesa de doces e Salgados">
+                    <div class="galeria-legenda">Mesa de doces e Salgados em Eventos profissionais</div>
+                </div>
+
+                <div class="galeria-item">
+                    <img src="C:\Users\Asus\Downloads\1785161779966.jpg" alt="Cupcakes personalizados">
+                    <div class="galeria-legenda">Cupcakes com logo ISS</div>
+                </div>
+
+                 <div class="galeria-item">
+                    <img src="C:\Users\Asus\Downloads\1785161805573.jpg" alt="Cupcakes personalizados">
+                    <div class="galeria-legenda">Cupcakes com logo ISS</div>
+                </div>
+
+                 <div class="galeria-item">
+                    <img src="C:\Users\Asus\Downloads\1785161793827.jpg" alt="Cupcakes personalizados">
+                    <div class="galeria-legenda">Cupcakes com logo ISS</div>
+                </div>
+
+                <div class="galeria-item">
+                    <img src="C:\Users\Asus\Downloads\1783168400988.jpg" alt="Cupcakes personalizados">
+                    <div class="galeria-legenda">Cupcakes com logo ISS</div>
+                </div>
+
+                <div class="galeria-item">
+                    <img src="C:\Users\Asus\Downloads\IMG-20260704-WA0999.jpg" alt="Bolo corporativo">
+                    <div class="galeria-legenda">Bolos corporativos para lançamentos do seu casamentos</div>
+                </div>
+                <div class="galeria-item">
+                    <img src="C:\Users\Asus\Downloads\1785161796909.jpg" alt="Cupcakes personalizados">
+                    <div class="galeria-legenda">Cupcakes com logo ISS</div>
+                </div>
+
+                
+                <div class="galeria-item">
+                    <img src="C:\Users\Asus\Downloads\1783167747571.jpg">
+                    <div class="galeria-legenda">Bolo para o melhor evento de Aniversario</div>
+                </div>
+                
+                <div class="galeria-item">
+                    <img src="C:\Users\Asus\Downloads\1785161784054.jpg">
+                    <div class="galeria-legenda">Bolo para o melhor evento de Aniversario</div>
+                </div>
+
+                <div class="galeria-item">
+                    <img src="C:\Users\Asus\Downloads\IMG-20260916-WA0014.jpg">
+                    <div class="galeria-legenda">Eventos internaçionais</div>
+                </div>
+                
+                <div class="galeria-item">
+                    <img src="C:\Users\Asus\Downloads\IMG-20260916-WA0017.jpg">
+                    <div class="galeria-legenda">Pães Crocantes ISS</div>
+                </div>
+                
+                
+            </div>
+            <div style="text-align: center; margin-top: 2rem;">
+                <button class="btn" onclick="solicitarServico('Entrega de Doces para Eventos')">Solicitar Orçamento</button>
+            </div>
+        </div>
+
+         <div id="Buffé" class="tab-content">
+            <p style="text-align: center; margin-bottom: 1rem;">Buffé personalizados para encantar teus convidados.</p>
+            <div class="Buffé">
+                <div class="galeria-item">
+                    <img src="C:\Users\Asus\Downloads\calderada.jpg">
+                    <div class="galeria-legenda">"Calderada de Cabrito</div>
+                </div>
+                <div class="galeria-item">
+                    <img src="C:\Users\Asus\Downloads\IMG-20250224-WA0007.jpg" alt="Bife de Frango">
+                    <div class="galeria-legenda">Bife</div>
+                </div>
+                <div class="galeria-item">
+                    <img src="C:\Users\Asus\Downloads\IMG-20250224-WA0018.jpg" alt="Bacalhão com natas">
+                    <div class="galeria-legenda">Bacalhão com natas</div>
+                </div>
+
+                <div class="galeria-item">
+                    <img src="C:\Users\Asus\Downloads\IMG-20260916-WA0000.jpg" alt="">
+                    <div class="galeria-legenda">Arroz Malandro</div>
+                </div>
+
+                <div class="galeria-item">
+                    <img src="C:\Users\Asus\Downloads\IMG-20260916-WA0001.jpg" alt="">
+                    <div class="galeria-legenda">Frutos do Mar</div>
+                </div>
+
+                <div class="galeria-item">
+                    <img src="C:\Users\Asus\Downloads\IMG-20260916-WA0002.jpg" alt="Calulo de peixe">
+                    <div class="galeria-legenda">Calulo de peixe</div>
+                </div>
+
+                <div class="galeria-item">
+                    <img src="C:\Users\Asus\Downloads\IMG-20260916-WA0003.jpg" alt="Grelhada Mista">
+                    <div class="galeria-legenda">Grelhado Mista</div>
+                </div>
+
+                 <div class="galeria-item">
+                    <img src="C:\Users\Asus\Downloads\IMG-20260916-WA0006.jpg" alt="Gizado de Carne de Vaca">
+                    <div class="galeria-legenda">Gizado de Carne de Vaca</div>
+                </div>
+
+                <div class="galeria-item">
+                    <img src="C:\Users\Asus\Downloads\IMG-20260916-WA0004.jpg" alt="Turtulho">
+                    <div class="galeria-legenda">Turtulho</div>
+                </div>
+
+                <div class="galeria-item">
+                    <img src="C:\Users\Asus\Downloads\IMG-20260916-WA0012.jpg" alt="Calulo de Carne">
+                    <div class="galeria-legenda">Calulo de Carne</div>
+                </div>
+
+                <div class="galeria-item">
+                    <img src="C:\Users\Asus\Downloads\IMG-20260916-WA0007.jpg" alt="Meia Ndungo">
+                    <div class="galeria-legenda">Meia Ndungo</div>
+                </div>
+                
+                <div class="galeria-item">
+                    <img src="C:\Users\Asus\Downloads\IMG-20260916-WA0008.jpg" alt="Meia Ndungo de Frango">
+                    <div class="galeria-legenda">Meia Ndungo de frango</div>
+                </div>
+
+                 <div class="galeria-item">
+                    <img src="C:\Users\Asus\Downloads\IMG-20260916-WA0010.jpg" alt="Frango Ábras">
+                    <div class="galeria-legenda">Frango Ábras</div>
+                </div>
+
+                <div class="galeria-item">
+                    <img src="C:\Users\Asus\Downloads\IMG-20260916-WA0009.jpg" alt="Carne de Cabrito">
+                    <div class="galeria-legenda">Carne de Cabrito</div>
+                </div>
+
+                 <div class="galeria-item">
+                    <img src="C:\Users\Asus\Downloads\IMG-20260916-WA0011.jpg" alt="Massa de Marisco">
+                    <div class="galeria-legenda">Massa de Marisco</div>
+                </div>
+
+            </div>
+            <div style="text-align: center; margin-top: 2rem;">
+                <button class="btn" onclick="solicitarServico('Entrega de Buffé para Eventos')">Solicitar Orçamento</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="eventos">
+        <h2 class="section-title">Agenda de Eventos ISS</h2>
+        
+        <div class="filtros">
+            <input type="text" id="pesquisa" placeholder="Pesquisar evento..." oninput="filtrarEventos()">
+            <select id="filtroTipo" onchange="filtrarEventos()">
+                <option value="todos">Todos os tipos</option>
+                <option value="Presencial">Presencial</option>
+                <option value="Online">Online</option>
+            </select>
+            <select id="filtroMes" onchange="filtrarEventos()">
+                <option value="todos">Todos os meses</option>
+                <option value="Out">Outubro</option>
+                <option value="Nov">Novembro</option>
+                <option value="Dez">Dezembro</option>
+            </select>
+        </div>
+
+        <div class="eventos-grid" id="eventosGrid"></div>
+    </div>
+
+    <!-- Modal de Inscrição -->
+    <div class="modal" id="modalInscricao">
+        <div class="modal-content">
+            <span class="close" onclick="fecharModal('modalInscricao')">&times;</span>
+            <h2 id="modalTitle">Inscrever no Evento</h2>
+            <form id="formInscricao">
+                <input type="hidden" id="eventoId">
+                <div class="form-group">
+                    <label>Nome Completo</label>
+                    <input type="text" id="nome" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label>Telefone / WhatsApp</label>
+                    <input type="tel" id="telefone" required>
+                </div>
+                <div class="form-group">
+                    <label>Tipo de Bilhete</label>
+                    <select id="bilhete">
+                        <option value="normal">Normal - Grátis</option>
+                        <option value="vip">VIP - 15.000 AOA</option>
+                        <option value="empresa">Empresarial - 50.000 AOA</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn">Confirmar Inscrição</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Contactar Admin -->
+    <div class="modal" id="modalAdmin">
+        <div class="modal-content">
+            <span class="close" onclick="fecharModal('modalAdmin')">&times;</span>
+            <h2>Contactar Admin Principal ISS</h2>
+            <form id="formAdmin">
+                <div class="form-group">
+                    <label>Teu Nome</label>
+                    <input type="text" id="adminNome" required>
+                </div>
+                <div class="form-group">
+                    <label>Assunto</label>
+                    <select id="adminAssunto">
+                        <option>Parceria</option>
+                        <p>Jucykiane cipriano</p>
+                        <option>Ser Palestrante</option>
+                        <option>Patrocínio</option>
+                        <option>Orçamento de Serviços</option>
+                        <option>Dúvida sobre Evento</option>
+                        <option>Outro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Mensagem</label>
+                    <textarea id="adminMsg" rows="4" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-whatsapp">Enviar para WhatsApp do Admin</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <div class="admin-float">
+        <button class="btn btn-whatsapp" onclick="abrirModal('modalAdmin')">
+            📞 Admin: 955 842 919
+        </button>
+    </div>
+
+    <footer id="contacto">
+        <h3>ISSENGUEL SERVICE - ISS</h3>
+        <p>Luanda, Samba | info@iss.co.ao | Admin: +244 955  842 919</p>
+        <p>© 2026 ISS. Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        const ADMIN_WHATSAPP = "244955842919";
+        
+        const eventos = [
+            {
+                id: 1, titulo: "ISS Digital Summit 2026", data: "15 Nov 2026", 
+                hora: "09:00", local: "Hotel Epic Sana, Luanda", tipo: "Presencial",
+                badge: "Destaque", desc: "O maior evento de marketing digital de Angola. SEO, Tráfego Pago, IA e Influencers.", mes: "Nov"
+            },
+            {
+                id: 2, titulo: "Workshop: Tráfego Pago do Zero", data: "28 Out 2026",
+                hora: "14:00", local: "Online via Zoom", tipo: "Online",
+                badge: "Vagas Limitadas", desc: "Aprende a criar campanhas no Meta Ads e Google Ads que vendem de verdade.", mes: "Out"
+            },
+            {
+                id: 3, titulo: "Masterclass: Conteúdo que Vira Cliente", data: "05 Dez 2026",
+                hora: "18:30", local: "ISS Hub, Talatona", tipo: "Presencial",
+                badge: "Novo", desc: "Storytelling, Reels e Copywriting para empresas angolanas.", mes: "Dez"
+            }
+        ];
+
+        function renderEventos(lista = eventos) {
+            const eventosGrid = document.getElementById('eventosGrid');
+            eventosGrid.innerHTML = '';
+            if(lista.length === 0) {
+                eventosGrid.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">Nenhum evento encontrado com esses filtros.</p>';
+                return;
+            }
+            lista.forEach(ev => {
+                eventosGrid.innerHTML += `
+                    <div class="card">
+                        <div class="card-img">
+                            <div class="card-badge">${ev.badge}</div>
+                        </div>
+                        <div class="card-content">
+                            <h3>${ev.titulo}</h3>
+                            <p>${ev.desc}</p>
+                            <div class="card-info">
+                                <span>📅 ${ev.data}</span>
+                                <span>⏰ ${ev.hora}</span>
+                                <span>📍 ${ev.local}</span>
+                                <span>💻 ${ev.tipo}</span>
+                            </div>
+                            <div class="card-actions">
+                                <button class="btn" onclick="abrirInscricao(${ev.id}, '${ev.titulo}')">Inscrever</button>
+                                <button class="btn btn-outline" onclick="partilhar('${ev.titulo}')">Partilhar</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function filtrarEventos() {
+            const texto = document.getElementById('pesquisa').value.toLowerCase();
+            const tipo = document.getElementById('filtroTipo').value;
+            const mes = document.getElementById('filtroMes').value;
+            
+            const filtrados = eventos.filter(ev => {
+                const matchTexto = ev.titulo.toLowerCase().includes(texto) || ev.desc.toLowerCase().includes(texto);
+                const matchTipo = tipo === 'todos' || ev.tipo === tipo;
+                const matchMes = mes === 'todos' || ev.mes === mes;
+                return matchTexto && matchTipo && matchMes;
+            });
+            renderEventos(filtrados);
+        }
+
+        // Abas de Serviços
+        function mudarAba(abaId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(abaId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function solicitarServico(servico) {
+            document.getElementById('adminAssunto').value = 'Orçamento de Serviços';
+            document.getElementById('adminMsg').value = `Olá, gostaria de um orçamento para: ${servico}`;
+            abrirModal('modalAdmin');
+        }
+
+        function abrirModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function fecharModal(id) { document.getElementById(id).style.display = 'none'; }
+        
+        function abrirInscricao(id, titulo) {
+            document.getElementById('eventoId').value = id;
+            document.getElementById('modalTitle').innerText = `Inscrição: ${titulo}`;
+            abrirModal('modalInscricao');
+        }
+
+        function mostrarToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 4000);
+        }
+
+        document.getElementById('formInscricao').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const nome = document.getElementById('nome').value;
+            const evento = eventos.find(ev => ev.id == document.getElementById('eventoId').value);
+            mostrarToast(`Obrigado, ${nome}! Inscrição para ${evento.titulo} recebida.`);
+            fecharModal('modalInscricao');
+            this.reset();
+            
+            const msg = `Nova inscrição ISS:%0AEvento: ${evento.titulo}%0ANome: ${nome}%0ATel: ${document.getElementById('telefone').value}%0ABilhete: ${document.getElementById('bilhete').value}`;
+            window.open(`https://wa.me/${ADMIN_WHATSAPP}?text=${msg}`, '_blank');
+        });
+
+        document.getElementById('formAdmin').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const nome = document.getElementById('adminNome').value;
+            const assunto = document.getElementById('adminAssunto').value;
+            const msg = document.getElementById('adminMsg').value;
+            const texto = `Olá Admin ISS,%0AMeu nome: ${nome}%0AAssunto: ${assunto}%0A%0A${msg}`;
+            window.open(`https://wa.me/${ADMIN_WHATSAPP}?text=${texto}`, '_blank');
+            fecharModal('modalAdmin');
+            this.reset();
+        });
+
+        function partilhar(titulo) {
+            const url = window.location.href;
+            const texto = `Olha este evento da ISS: ${titulo} ${url}`;
+            if (navigator.share) {
+                navigator.share({ title: 'ISS Eventos', text: texto, url: url });
+            } else {
+                navigator.clipboard.writeText(texto);
+                mostrarToast('Link copiado! Cola no WhatsApp para partilhar.');
+            }
+        }
+
+        const countDownDate = new Date("Nov 15, 2026 09:00:00").getTime();
+        setInterval(function() {
+            const distance = countDownDate - new Date().getTime();
+            document.getElementById("days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24));
+            document.getElementById("hours").innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            document.getElementById("minutes").innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            document.getElementById("seconds").innerText = Math.floor((distance % (1000 * 60)) / 1000);
+        }, 1000);
+
+        renderEventos();
+    </script>
+</body>
+</html>
